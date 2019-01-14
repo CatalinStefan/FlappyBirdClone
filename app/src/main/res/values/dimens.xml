@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="bird_x">50dp</dimen>
+    <dimen name="bird_height">40dp</dimen>
+    <dimen name="bird_width">66dp</dimen>
+</resources>
