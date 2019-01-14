@@ -9,6 +9,8 @@ import android.graphics.Rect;
 
 import com.flappybirdclone.devtides.flappybirdclone.R;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Obstacle implements Sprite {
@@ -56,6 +58,14 @@ public class Obstacle implements Sprite {
         xPosition -= speed;
         if(xPosition <= 0 - width - 2*headExtraWidth) {
             callback.obstacleOffScreen(this);
+        } else {
+            ArrayList<Rect> positions = new ArrayList<>();
+            Rect bottomPosition = new Rect(xPosition, screenHeight - height - headHeight, xPosition + width + 2*headExtraWidth, screenHeight);
+            Rect topPosition = new Rect(xPosition, 0, xPosition + width + 2*headExtraWidth, screenHeight - height - headHeight - separation);
+
+            positions.add(bottomPosition);
+            positions.add(topPosition);
+            callback.updatePosition(this, positions);
         }
     }
 }
