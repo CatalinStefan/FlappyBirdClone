@@ -11,6 +11,8 @@ import android.view.SurfaceView;
 
 import com.flappybirdclone.devtides.flappybirdclone.sprites.Background;
 import com.flappybirdclone.devtides.flappybirdclone.sprites.Bird;
+import com.flappybirdclone.devtides.flappybirdclone.sprites.Obstacle;
+import com.flappybirdclone.devtides.flappybirdclone.sprites.ObstacleManager;
 
 public class GameManager extends SurfaceView implements SurfaceHolder.Callback {
 
@@ -19,6 +21,7 @@ public class GameManager extends SurfaceView implements SurfaceHolder.Callback {
     private Bird bird;
     private Background background;
     private DisplayMetrics dm;
+    private ObstacleManager obstacleManager;
 
     public GameManager(Context context, AttributeSet attributeSet) {
         super(context);
@@ -34,6 +37,7 @@ public class GameManager extends SurfaceView implements SurfaceHolder.Callback {
     private void initGame() {
         bird = new Bird(getResources());
         background = new Background(getResources(), dm.heightPixels);
+        obstacleManager = new ObstacleManager(getResources(), dm.heightPixels, dm.widthPixels);
     }
 
     @Override
@@ -63,6 +67,7 @@ public class GameManager extends SurfaceView implements SurfaceHolder.Callback {
 
     public void update() {
         bird.update();
+        obstacleManager.update();
     }
 
     @Override
@@ -71,6 +76,7 @@ public class GameManager extends SurfaceView implements SurfaceHolder.Callback {
         canvas.drawRGB(150, 255, 255);
         background.draw(canvas);
         bird.draw(canvas);
+        obstacleManager.draw(canvas);
     }
 
     @Override

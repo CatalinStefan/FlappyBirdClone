@@ -7,4 +7,11 @@
     <dimen name="flappy_boost">-18dp</dimen>
     <dimen name="bkg_top_height">150dp</dimen>
     <dimen name="bkg_bottom_height">200dp</dimen>
+    <dimen name="obstacle_width">100dp</dimen>
+    <dimen name="obstacle_separation">275dp</dimen>
+    <dimen name="obstacle_speed">5dp</dimen>
+    <dimen name="head_height">30dp</dimen>
+    <dimen name="head_extra_width">20dp</dimen>
+    <dimen name="obstacle_min_position">100dp</dimen>
+    <dimen name="obstacle_interval">350dp</dimen>
 </resources>
