@@ -3,6 +3,7 @@ package com.flappybirdclone.devtides.flappybirdclone;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -52,12 +53,18 @@ public class GameManager extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void update() {
-
+        bird.update();
     }
 
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
         bird.draw(canvas);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        bird.onTouchEvent();
+        return super.onTouchEvent(event);
     }
 }
