@@ -26,6 +26,7 @@ public class Bird implements Sprite {
         this.callback = callback;
 
         birdX = (int) resources.getDimension(R.dimen.bird_x);
+        birdY = screenHeight / 2;
         birdWidth = (int) resources.getDimension(R.dimen.bird_width);
         birdHeight = (int) resources.getDimension(R.dimen.bird_height);
         gravity = resources.getDimension(R.dimen.gravity);

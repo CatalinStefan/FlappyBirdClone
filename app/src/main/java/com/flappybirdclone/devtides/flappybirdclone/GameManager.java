@@ -12,8 +12,11 @@ import android.view.SurfaceView;
 
 import com.flappybirdclone.devtides.flappybirdclone.sprites.Background;
 import com.flappybirdclone.devtides.flappybirdclone.sprites.Bird;
+import com.flappybirdclone.devtides.flappybirdclone.sprites.GameMessage;
+import com.flappybirdclone.devtides.flappybirdclone.sprites.GameOver;
 import com.flappybirdclone.devtides.flappybirdclone.sprites.Obstacle;
 import com.flappybirdclone.devtides.flappybirdclone.sprites.ObstacleManager;
+import com.flappybirdclone.devtides.flappybirdclone.sprites.Score;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,13 +24,18 @@ import java.util.List;
 
 public class GameManager extends SurfaceView implements SurfaceHolder.Callback, GameManagerCallback {
 
+    private static final String APP_NAME = "FlappyBirdClone";
     public MainThread thread;
-    private GameState gameState = GameState.PLAYING;
+    private GameState gameState = GameState.INITIAL;
 
     private Bird bird;
     private Background background;
     private DisplayMetrics dm;
     private ObstacleManager obstacleManager;
+    private GameOver gameOver;
+    private GameMessage gameMessage;
+    private Score scoreSprite;
+    private int score;
     private Rect birdPosition;
     private HashMap<Obstacle, List<Rect>> obstaclePositions = new HashMap<>();
 
@@ -43,9 +51,15 @@ public class GameManager extends SurfaceView implements SurfaceHolder.Callback, 
     }
 
     private void initGame() {
+        score = 0;
+        birdPosition = new Rect();
+        obstaclePositions = new HashMap<>();
         bird = new Bird(getResources(), dm.heightPixels, this);
         background = new Background(getResources(), dm.heightPixels);
         obstacleManager = new ObstacleManager(getResources(), dm.heightPixels, dm.widthPixels, this);
+        gameOver = new GameOver(getResources(), dm.heightPixels, dm.widthPixels);
+        gameMessage = new GameMessage(getResources(), dm.heightPixels, dm.widthPixels);
+        scoreSprite = new Score(getResources(), dm.heightPixels, dm.widthPixels);
     }
 
     @Override
@@ -95,11 +109,18 @@ public class GameManager extends SurfaceView implements SurfaceHolder.Callback, 
                 case PLAYING:
                     bird.draw(canvas);
                     obstacleManager.draw(canvas);
+                    scoreSprite.draw(canvas);
                     calculateCollision();
+                    break;
+                case INITIAL:
+                    bird.draw(canvas);
+                    gameMessage.draw(canvas);
                     break;
                 case GAME_OVER:
                     bird.draw(canvas);
                     obstacleManager.draw(canvas);
+                    gameOver.draw(canvas);
+                    scoreSprite.draw(canvas);
                     break;
             }
         }
@@ -111,7 +132,13 @@ public class GameManager extends SurfaceView implements SurfaceHolder.Callback, 
             case PLAYING:
                 bird.onTouchEvent();
                 break;
+            case INITIAL:
+                bird.onTouchEvent();
+                gameState = GameState.PLAYING;
+                break;
             case GAME_OVER:
+                initGame();
+                gameState = GameState.INITIAL;
                 break;
         }
         bird.onTouchEvent();
@@ -134,6 +161,8 @@ public class GameManager extends SurfaceView implements SurfaceHolder.Callback, 
     @Override
     public void removeObstacle(Obstacle obstacle) {
         obstaclePositions.remove(obstacle);
+        score++;
+        scoreSprite.updateScore(score);
     }
 
     public void calculateCollision() {
@@ -155,6 +184,7 @@ public class GameManager extends SurfaceView implements SurfaceHolder.Callback, 
         if (collision) {
             gameState = GameState.GAME_OVER;
             bird.collision();
+            scoreSprite.collision(getContext().getSharedPreferences(APP_NAME, Context.MODE_PRIVATE));
         }
     }
 }
