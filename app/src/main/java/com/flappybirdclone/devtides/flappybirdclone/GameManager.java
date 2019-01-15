@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.media.MediaPlayer;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
@@ -39,8 +40,15 @@ public class GameManager extends SurfaceView implements SurfaceHolder.Callback, 
     private Rect birdPosition;
     private HashMap<Obstacle, List<Rect>> obstaclePositions = new HashMap<>();
 
+    private MediaPlayer mpPoint;
+    private MediaPlayer mpSwoosh;
+    private MediaPlayer mpDie;
+    private MediaPlayer mpHit;
+    private MediaPlayer mpWing;
+
     public GameManager(Context context, AttributeSet attributeSet) {
         super(context);
+        initSounds();
         getHolder().addCallback(this);
         thread = new MainThread(getHolder(), this);
 
@@ -60,6 +68,14 @@ public class GameManager extends SurfaceView implements SurfaceHolder.Callback, 
         gameOver = new GameOver(getResources(), dm.heightPixels, dm.widthPixels);
         gameMessage = new GameMessage(getResources(), dm.heightPixels, dm.widthPixels);
         scoreSprite = new Score(getResources(), dm.heightPixels, dm.widthPixels);
+    }
+
+    private void initSounds() {
+        mpPoint = MediaPlayer.create(getContext(), R.raw.point);
+        mpSwoosh = MediaPlayer.create(getContext(), R.raw.swoosh);
+        mpDie = MediaPlayer.create(getContext(), R.raw.die);
+        mpHit = MediaPlayer.create(getContext(), R.raw.hit);
+        mpWing = MediaPlayer.create(getContext(), R.raw.wing);
     }
 
     @Override
@@ -131,17 +147,19 @@ public class GameManager extends SurfaceView implements SurfaceHolder.Callback, 
         switch (gameState) {
             case PLAYING:
                 bird.onTouchEvent();
+                mpWing.start();
                 break;
             case INITIAL:
                 bird.onTouchEvent();
+                mpWing.start();
                 gameState = GameState.PLAYING;
+                mpSwoosh.start();
                 break;
             case GAME_OVER:
                 initGame();
                 gameState = GameState.INITIAL;
                 break;
         }
-        bird.onTouchEvent();
         return super.onTouchEvent(event);
     }
 
@@ -163,6 +181,7 @@ public class GameManager extends SurfaceView implements SurfaceHolder.Callback, 
         obstaclePositions.remove(obstacle);
         score++;
         scoreSprite.updateScore(score);
+        mpPoint.start();
     }
 
     public void calculateCollision() {
@@ -185,6 +204,13 @@ public class GameManager extends SurfaceView implements SurfaceHolder.Callback, 
             gameState = GameState.GAME_OVER;
             bird.collision();
             scoreSprite.collision(getContext().getSharedPreferences(APP_NAME, Context.MODE_PRIVATE));
+            mpHit.start();
+            mpHit.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mpDie.start();
+                }
+            });
         }
     }
 }
